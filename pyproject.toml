@@ -4,4 +4,10 @@ version = "0.1.0"
 description = "Challenge 2 file resizing and frame processing api service"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "ipykernel>=7.2.0",
+    "matplotlib>=3.10.8",
+    "numpy>=2.4.2",
+    "opencv-python-headless>=4.13.0.92",
+    "pandas>=3.0.0",
+]
