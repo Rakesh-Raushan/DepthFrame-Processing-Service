@@ -1,3 +1,7 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "depthframe-processing-service"
 version = "0.1.0"
@@ -10,4 +14,22 @@ dependencies = [
     "numpy>=2.4.2",
     "opencv-python-headless>=4.13.0.92",
     "pandas>=3.0.0",
+    "pytest>=9.0.2",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+    "pre-commit>=4.5.1",
+    "pandas-stubs>=2.0.0",
 ]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/depthframe_processing_service"]
+
+[tool.mypy]
+python_version = "3.13"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+mypy_path = "src"
+explicit_package_bases = true
+exclude = ["tests/", "notebooks/"]
