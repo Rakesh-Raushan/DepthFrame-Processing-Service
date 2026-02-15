@@ -43,7 +43,7 @@ dev:
 # Development
 # =============================================================================
 run:
-	@echo "TODO: Add uvicorn command"
+	uv run uvicorn depthframe_processing_service.api.app:app --host 0.0.0.0 --port 8000 --reload
 
 test:
 	uv run pytest tests/ -v
@@ -60,6 +60,14 @@ format:
 
 typecheck:
 	uv run mypy src/depthframe_processing_service
+
+
+# =============================================================================
+# Ingestion
+# =============================================================================
+ingest:
+	uv run python -m depthframe_processing_service.ingest
+
 
 # =============================================================================
 # Docker
