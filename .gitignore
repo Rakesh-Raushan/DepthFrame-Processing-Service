@@ -1,0 +1,76 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+*.manifest
+*.spec
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+coverage.xml
+*.cover
+*.py,cover
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Linting
+.ruff_cache/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Runtime data (persisted via Docker volumes)
+data/
+
+# Environment files (keep .env.example)
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+logs/
+
+# Model weights (production models in models/, training artifacts in training/artifacts/)
+# Uncomment to exclude large model files (use Git LFS or external storage instead):
+# models/*.pt
+# models/*.pth
+# models/*.onnx
+# training/artifacts/models/*.pt
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/

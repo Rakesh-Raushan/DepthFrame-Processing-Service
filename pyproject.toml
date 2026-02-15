@@ -1,0 +1,7 @@
+[project]
+name = "depthframe-processing-service"
+version = "0.1.0"
+description = "Challenge 2 file resizing and frame processing api service"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
