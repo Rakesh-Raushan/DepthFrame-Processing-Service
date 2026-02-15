@@ -253,10 +253,10 @@ def store_to_database(
         "pixel_range_original": f"[{report.pixel_min:.0f}, {report.pixel_max:.0f}]",
         "validation_summary": json.dumps(
             {
-                "raw_rows": report.raw_rows,
-                "clean_rows": report.clean_rows,
-                "null_rows_dropped": report.null_rows_dropped,
-                "duplicate_depths_dropped": report.duplicate_depths_dropped,
+                "raw_rows": int(report.raw_rows),
+                "clean_rows": int(report.clean_rows),
+                "null_rows_dropped": int(report.null_rows_dropped),
+                "duplicate_depths_dropped": int(report.duplicate_depths_dropped),
                 "is_monotonic": report.is_monotonic,
             }
         ),

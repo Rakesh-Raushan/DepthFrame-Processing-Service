@@ -19,6 +19,10 @@ dependencies = [
     "mypy>=1.10.0",
     "pre-commit>=4.5.1",
     "pandas-stubs>=2.0.0",
+    "uvicorn>=0.30.0",
+    "fastapi>=0.129.0",
+    "pytest-asyncio>=1.3.0",
+    "httpx>=0.28.1",
 ]
 
 [tool.hatch.build.targets.wheel]
@@ -33,3 +37,11 @@ ignore_missing_imports = true
 mypy_path = "src"
 explicit_package_bases = true
 exclude = ["tests/", "notebooks/"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+filterwarnings = [
+    "ignore:Mean of empty slice:RuntimeWarning",
+    "ignore:invalid value encountered in scalar divide:RuntimeWarning",
+]
