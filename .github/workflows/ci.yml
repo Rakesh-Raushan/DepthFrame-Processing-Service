@@ -1,0 +1,116 @@
+name: CI - Build and Smoke Test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build & start container
+        run: docker compose up --build -d
+
+      - name: Wait for healthy container
+        run: |
+          echo "Waiting for container to become healthy..."
+          for i in $(seq 1 30); do
+            STATUS=$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q app) 2>/dev/null || echo "starting")
+            echo "  Attempt $i/30: $STATUS"
+            if [ "$STATUS" = "healthy" ]; then
+              echo "Container is healthy!"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Container did not become healthy in time"
+          docker compose logs
+          exit 1
+
+      - name: Health check
+        run: |
+          RESPONSE=$(curl -sf http://localhost:8000/health)
+          echo "$RESPONSE" | python3 -m json.tool
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          assert data['status'] == 'healthy', f'Unexpected: {data[\"status\"]}'
+          assert data['db_connected'] is True, 'DB not connected'
+          assert data['row_count'] == 5460, f'Expected 5460 rows, got {data[\"row_count\"]}'
+          print('Health check passed: 5460 rows ingested')
+          "
+
+      - name: Metadata endpoint
+        run: |
+          RESPONSE=$(curl -sf http://localhost:8000/api/v1/metadata)
+          echo "$RESPONSE" | python3 -m json.tool
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          assert data['depth_min'] == 9000.1
+          assert data['depth_max'] == 9546.0
+          assert data['resized_width'] == 150
+          assert 'resistivity' in data['available_colormaps']
+          print('Metadata validated')
+          "
+
+      - name: List colormaps
+        run: |
+          RESPONSE=$(curl -sf http://localhost:8000/api/v1/colormaps)
+          echo "$RESPONSE" | python3 -m json.tool
+          echo "$RESPONSE" | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          names = [c['name'] for c in data['colormaps']]
+          assert len(names) >= 5, f'Expected >=5 colormaps, got {len(names)}'
+          assert data['default'] == 'resistivity'
+          print(f'Colormaps: {names}')
+          "
+
+      - name: Fetch image frame (PNG, resistivity)
+        run: |
+          curl -sf "http://localhost:8000/api/v1/image?depth_min=9100&depth_max=9200&colormap=resistivity" \
+            --output frame_resistivity.png
+          FILE_SIZE=$(stat -c%s frame_resistivity.png)
+          echo "Resistivity PNG frame: $FILE_SIZE bytes"
+          xxd -l 8 frame_resistivity.png | grep -q "8950 4e47" || { echo "FAIL: Not a valid PNG"; exit 1; }
+          [ "$FILE_SIZE" -gt 1000 ] || { echo "FAIL: PNG too small"; exit 1; }
+
+      - name: Fetch image frame (JPEG, geological)
+        run: |
+          curl -sf "http://localhost:8000/api/v1/image?depth_min=9300&depth_max=9400&colormap=geological&format=jpeg" \
+            --output frame_geological.jpeg
+          FILE_SIZE=$(stat -c%s frame_geological.jpeg)
+          echo "Geological JPEG frame: $FILE_SIZE bytes"
+          [ "$FILE_SIZE" -gt 1000 ] || { echo "FAIL: JPEG too small"; exit 1; }
+
+      - name: Fetch raw pixel data
+        run: |
+          curl -sf "http://localhost:8000/api/v1/image/raw?depth_min=9100&depth_max=9105" \
+            -o raw.bin -D headers.txt
+          WIDTH=$(grep -i "x-frame-width" headers.txt | tr -d '\r' | awk '{print $2}')
+          echo "Raw frame width: $WIDTH"
+          [ "$WIDTH" = "150" ] || { echo "FAIL: Expected width 150, got $WIDTH"; exit 1; }
+
+      - name: Validate error handling
+        run: |
+          # depth_min > depth_max → 400
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000/api/v1/image?depth_min=9200&depth_max=9100")
+          [ "$STATUS" = "400" ] || { echo "FAIL: Expected 400, got $STATUS"; exit 1; }
+          echo "Bad range → 400 ✓"
+
+          # Out-of-range depth → 404
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8000/api/v1/image?depth_min=1000&depth_max=2000")
+          [ "$STATUS" = "404" ] || { echo "FAIL: Expected 404, got $STATUS"; exit 1; }
+          echo "Out of range → 404 ✓"
+
+      - name: Cleanup
+        if: always()
+        run: docker compose down -v
