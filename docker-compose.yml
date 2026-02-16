@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "${DPS_PORT:-8000}:8000"
+    volumes:
+      # Persist the SQLite DB across container restarts
+      - db_data:/app/data
+      # Mount the CSV for first-run ingestion
+      # After ingestion, the DB is in the named volume and this
+      # bind mount can be removed if desired.
+      - ./data/Challenge2.csv:/app/data/Challenge2.csv:ro
+    environment:
+      - DPS_LOG_LEVEL=${DPS_LOG_LEVEL:-info}
+      - DPS_DEFAULT_COLORMAP=${DPS_DEFAULT_COLORMAP:-resistivity}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+
+volumes:
+  db_data:
+    driver: local

@@ -72,22 +72,19 @@ ingest:
 # =============================================================================
 # Docker
 # =============================================================================
+
 docker-build:
-	docker-compose build
+	docker build -t depthframe-processing-service .
 
-docker-up:
-	docker-compose up -d
+docker-run:
+	docker compose up --build
 
-docker-down:
-	docker-compose down
+docker-stop:
+	docker compose down
 
-docker-logs:
-	docker-compose logs -f
-
-docker-rebuild:
-	docker-compose down
-	docker-compose build --no-cache
-	docker-compose up -d
+docker-clean:
+	docker compose down -v --rmi local
+	docker image prune -f
 
 # =============================================================================
 # Cleanup
