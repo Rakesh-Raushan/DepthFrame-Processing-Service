@@ -51,7 +51,8 @@ dmypy.json
 Thumbs.db
 
 # Runtime data (persisted via Docker volumes)
-data/
+data/*.db
+data/exploration_graphs/
 
 # Environment files (keep .env.example)
 .env
