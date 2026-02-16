@@ -42,7 +42,7 @@ Ingest a CSV of image log data → Resize, validate, and store in SQLite → Que
 ### Docker (Recommended)
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Rakesh-Raushan/DepthFrame-Processing-Service
 cd DepthFrame-Processing-Service
 
 docker compose up --build
