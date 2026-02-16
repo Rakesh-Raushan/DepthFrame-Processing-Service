@@ -37,12 +37,18 @@ COPY --from=builder /app/.venv /app/.venv
 # Copy application code
 COPY --from=builder /app/src /app/src
 
-# Copy entrypoint and data directory setup
+# Copy entrypoint
 COPY scripts/entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 
-# Create data directory with correct ownership
+# Create data directory
 RUN mkdir -p /app/data && chown -R appuser:appuser /app
+
+# Bake the dataset CSV into the image for self-contained evaluation.
+# This adds ~4.4MB to the image but means `docker compose up --build`
+# works without any manual file placement. In a production deployment,
+# the CSV would be mounted at runtime instead.
+COPY data/Challenge2.csv /app/data/Challenge2.csv
 
 # Activate the virtual environment
 ENV PATH="/app/.venv/bin:$PATH"

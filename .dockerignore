@@ -36,7 +36,6 @@ data/exploration_graphs/
 htmlcov/
 
 # Data files (mounted at runtime, not baked into image)
-data/*.csv
 data/*.db
 *.sqlite
 *.sqlite3

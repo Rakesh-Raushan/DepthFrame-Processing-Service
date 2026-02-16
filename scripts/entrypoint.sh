@@ -15,7 +15,7 @@ echo "CSV path: $CSV_PATH"
 if [ ! -f "$DB_PATH" ]; then
     if [ ! -f "$CSV_PATH" ]; then
         echo "ERROR: CSV file not found at $CSV_PATH"
-        echo "Mount the data directory with the CSV file:"
+        echo "The CSV should be baked into the image or mounted at runtime:"
         echo "  docker run -v /path/to/data:/app/data ..."
         exit 1
     fi
