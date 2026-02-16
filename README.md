@@ -2,6 +2,8 @@
 
 > Production-grade REST API for ingesting, storing, and serving image log data with depth-range querying and customizable colormap rendering.
 
+[![CI — Build & Smoke Test](https://github.com/Rakesh-Raushan/DepthFrame-Processing-Service/actions/workflows/ci.yml/badge.svg)](https://github.com/Rakesh-Raushan/DepthFrame-Processing-Service/actions/workflows/ci.yml)
+[![Live Demo](https://img.shields.io/badge/%F0%9F%A4%97_Live_Demo-Swagger_UI-yellow.svg)](https://perpetualquest-depthframe-processing-service.hf.space/docs)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.115+-green.svg)](https://fastapi.tiangolo.com)
 [![Docker](https://img.shields.io/badge/Docker-ready-blue.svg)](https://www.docker.com/)
@@ -31,14 +33,17 @@ Ingest a CSV of image log data → Resize, validate, and store in SQLite → Que
 
 ## Quick Start
 
+### Live Demo (No Setup Required)
+
+> **[Try the API →](https://perpetualquest-depthframe-processing-service.hf.space/docs)**
+>
+> Interactive Swagger UI hosted on Hugging Face Spaces. No installation needed — test all endpoints directly in the browser.
+
 ### Docker (Recommended)
 
 ```bash
 git clone <repo-url>
 cd DepthFrame-Processing-Service
-
-# Place Challenge2.csv in data/
-cp /path/to/Challenge2.csv data/
 
 docker compose up --build
 # First run ingests CSV → DB automatically
@@ -197,7 +202,7 @@ DPS_INTERPOLATION_METHOD=AREA        # cv2 interpolation method
 DPS_DEFAULT_COLORMAP=resistivity     # Default colormap for API
 DPS_HOST=0.0.0.0                     # API host
 DPS_PORT=8000                        # API port
-DPS_LOG_LEVEL=INFO                   # Logging level
+DPS_LOG_LEVEL=info                   # Logging level (uvicorn: info, debug, warning, error, critical)
 ```
 
 ---

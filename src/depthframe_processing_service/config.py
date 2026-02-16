@@ -30,7 +30,7 @@ class Settings:
     default_colormap: str = "resistivity"
 
     # logging settings
-    log_level: str = "INFO"
+    log_level: str = "info"
 
     @property
     def csv_path(self) -> Path:
